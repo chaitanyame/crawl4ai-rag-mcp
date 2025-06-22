@@ -4,17 +4,22 @@ This README provides instructions for adding the local codebase to the [crawl4ai
 
 ## Instructions to Push the Code
 
-You can push the code directly from this directory by adding the GitHub repository as a remote. Here's how:
+It looks like this directory is already a Git repository pointing to `coleam00/mcp-crawl4ai-rag.git`. Since you want to push to your own repository `chaitanyame/crawl4ai-rag-mcp.git`, follow these steps:
 
-1. Make sure you're authenticated with GitHub on your local machine:
+1. Check your current remote settings:
    ```
-   git config --global user.name "Your Name"
-   git config --global user.email "your.email@example.com"
+   git remote -v
    ```
 
-2. If this directory isn't already a Git repository, initialize it:
+2. If the origin is pointing to coleam00's repository, remove it and add your own:
    ```
-   git init
+   git remote remove origin
+   git remote add origin https://github.com/chaitanyame/crawl4ai-rag-mcp.git
+   ```
+
+   Or if you want to keep the original remote but add yours as well:
+   ```
+   git remote add my-repo https://github.com/chaitanyame/crawl4ai-rag-mcp.git
    ```
 
 3. Make sure .env is in your .gitignore file to avoid pushing sensitive information:
@@ -22,32 +27,27 @@ You can push the code directly from this directory by adding the GitHub reposito
    echo ".env" >> .gitignore
    ```
 
-4. Add the GitHub repository as a remote:
-   ```
-   git remote add origin https://github.com/chaitanyame/crawl4ai-rag-mcp.git
-   ```
-
-5. Add all files to Git:
+4. If you have uncommitted changes, add and commit them:
    ```
    git add .
-   ```
-
-6. Commit the changes:
-   ```
    git commit -m "Add crawl4ai-rag MCP server with Neo4j knowledge graph for hallucination detection"
    ```
 
-7. Push the changes to GitHub:
+5. Push the changes to your GitHub repository:
    ```
+   # If you renamed the original origin
    git push -u origin main
+   
+   # Or if you added a new remote named 'my-repo'
+   git push -u my-repo main
    ```
    
-   If the repository already has content and Git rejects the push, you may need to pull first or use force push (use with caution):
+6. If the repository already has content and Git rejects the push, you may need to pull first or use force push:
    ```
-   # Pull first if needed
+   # Pull first if needed (use this if you renamed 'origin')
    git pull origin main --allow-unrelated-histories
    
-   # Or force push (if you're sure you want to override the remote content)
+   # Or force push (use with caution)
    git push -u origin main --force
    ```
 
