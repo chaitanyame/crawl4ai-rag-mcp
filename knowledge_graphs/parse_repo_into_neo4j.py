@@ -24,6 +24,9 @@ import ast
 from dotenv import load_dotenv
 from neo4j import AsyncGraphDatabase
 
+# Load environment variables from .env file
+load_dotenv()
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -500,10 +503,21 @@ class DirectNeo4jExtractor:
             except Exception as e:
                 logger.warning(f"Could not fully remove {target_dir}: {e}. Proceeding anyway...")
         
+        # Use GIT_PATH environment variable if available, otherwise use 'git' command
+        git_executable = os.environ.get('GIT_PATH', 'git')
+        logger.info(f"Using git executable: {git_executable}")
+        
         logger.info(f"Running git clone from {repo_url}")
-        subprocess.run(['git', 'clone', '--depth', '1', repo_url, target_dir], check=True)
-        logger.info("Repository cloned successfully")
-        return target_dir
+        try:
+            subprocess.run([git_executable, 'clone', '--depth', '1', repo_url, target_dir], check=True)
+            logger.info("Repository cloned successfully")
+            return target_dir
+        except Exception as e:
+            logger.error(f"Git clone failed: {e}")
+            if os.path.exists(target_dir):
+                logger.info(f"Creating empty target directory as fallback: {target_dir}")
+                os.makedirs(target_dir, exist_ok=True)
+            raise RuntimeError(f"Git clone failed: {e}")
     
     def get_python_files(self, repo_path: str) -> List[Path]:
         """Get Python files, focusing on main source directories"""
